@@ -35,6 +35,7 @@ const SearchBar = (props) => {
             </div>
             <div className="col-auto">
               <button
+                disabled={props.disabled}
                 onClick={(event) => props.loadRecipies(event)}
                 type="submit"
                 className="btn btn-primary">Seach</button>

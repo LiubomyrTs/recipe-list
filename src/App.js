@@ -3,7 +3,8 @@ import { BrowserRouter, Route } from 'react-router-dom';
 
 import './App.css';
 
-import CardList from './components/CardList';
+import RecipesList from './components/RecipesList';
+import FullRecipe from './components/FullRecipe';
 
 class App extends Component {
 
@@ -11,7 +12,8 @@ class App extends Component {
     return (
       <BrowserRouter>
         <div className="container">
-          <Route path="/" exact component={CardList} />
+          <Route path="/" exact component={RecipesList} />
+          <Route path="/:id" exact component={FullRecipe} />
         </div>
       </BrowserRouter>
     )

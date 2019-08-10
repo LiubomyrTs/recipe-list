@@ -1,39 +1,50 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners';
 import axios from 'axios';
 
 import SearchBar from "./SearchBar";
 
-class CardList extends Component {
+const APIkey = process.env.REACT_APP_API_KEY;
+
+class RecipesList extends Component {
   constructor(props) {
     super(props)
     this.state = {
       recipes: null,
-      APIkey2: '6c95000d9bc67b8ff8fe7d6c72448efb',
-      APIkey: '104de0e93fdddafa7db772fbbb2f9654',
       query: '',
-      sortType: 't'
+      sortType: 't',
+      error: false,
+      loading: true,
+      errorMessage: ''
     }
 
     this.changeQueryHandler = this.changeQueryHandler.bind(this);
+    this.changeSortTypeHandler = this.changeSortTypeHandler.bind(this);
   }
-  // https://www.food2fork.com/api/search?key=YOUR_API_KEY&q=chicken%20breast&page=2
+
   componentDidMount() {
-    // axios.get('https://www.food2fork.com/api/search?key=' + this.state.APIkey + '').then(response => {
-    //   this.setState({recipes: response.data.recipes})
-    // })
-    // this.loadRecipies();
+    this.loadRecipies();
   }
 
   loadRecipies(event) {
     if (event) {
       event.preventDefault();
     }
-    axios.get('https://www.food2fork.com/api/search?key=' + this.state.APIkey + '&q=' + this.state.query + '&sort=' + this.state.sortType)
+    if (!this.state.loading) {
+      this.setState({loading: true});
+    }
+    axios.get('https://www.food2fork.com/api/search?key=' + APIkey + '&q=' + this.state.query + '&sort=' + this.state.sortType)
     .then(response => {
-      this.setState({recipes: response.data.recipes});
+      // Reached API Call limit
+      if (response.data.error === "limit") {
+        this.setState({error: true, errorMessage: 'API Call limit reached', loading: false})
+      }
+      else {
+        this.setState({recipes: response.data.recipes, loading: false, error: false});
+      }
     })
-    .catch(error => console.error(error))
+    .catch(error => this.setState({error: true, errorMessage: 'Something went wrong'}))
   }
 
   changeQueryHandler = (event) => {
@@ -68,6 +79,10 @@ class CardList extends Component {
       })
     }
 
+    if (this.state.loading) {
+      loadedRecipes = <div className="d-flex w-100 justify-content-center"><ClipLoader size={300} loading={this.state.loading}/></div>;
+    }
+
     return (
       <div>
         <SearchBar
@@ -76,11 +91,11 @@ class CardList extends Component {
           loadRecipies={(event) => this.loadRecipies(event)}
         />
         <div className="d-flex flex-wrap">
-          {loadedRecipes}
+          {this.state.error ? <h1>{this.state.errorMessage}</h1> : loadedRecipes}
         </div>
       </div>
     )
   }
 }
 
-export default CardList;
+export default RecipesList;
