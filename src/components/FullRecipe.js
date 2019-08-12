@@ -20,21 +20,19 @@ class FullRecipe extends Component {
   componentDidMount() {
     axios.get('https://www.food2fork.com/api/get?key=' + APIkey + '&rId=' + this.props.match.params.id)
     .then(response => {
+      // Reached API Call limit
       if (response.data.error === 'limit') {
         this.setState({error: true, errorMessage: 'API Call limit reached', loading: false})
       }
-      if (response.data.recipe || response.data.recipe.length) {
-        this.setState({recipe: response.data.recipe, error: false, loading: false});
-      }
-      else if (response.data.recipe.length === 0) {
+      // If you pass non-existing recipe_id you'll recieve an empty array
+      if (response.data.recipe.length === 0) {
         this.setState({errorMessage: 'no recipe found', error: true, loading: false})
-      }
-
-      else {
         console.log(response)
       }
-      //Reached API Calls limit
-
+      else if (response.data.recipe || response.data.recipe.length) {
+        this.setState({recipe: response.data.recipe, error: false, loading: false});
+        console.log(response)
+      }
     })
     .catch(error => this.setState({error: true, errorMessage: 'Something went wrong', loading: false}));
   }

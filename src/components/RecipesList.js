@@ -42,6 +42,7 @@ class RecipesList extends Component {
       }
       else {
         this.setState({recipes: response.data.recipes, loading: false, error: false});
+        console.log(response)
       }
     })
     .catch(error => this.setState({error: true, errorMessage: 'Something went wrong'}))
