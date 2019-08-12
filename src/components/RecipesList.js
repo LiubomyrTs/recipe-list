@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 import axios from 'axios';
+import InfiniteScroll from 'react-infinite-scroller';
 
+import Aux from '../hoc/Aux';
 import SearchBar from "./SearchBar";
 
 const APIkey = process.env.REACT_APP_API_KEY;
@@ -11,39 +13,48 @@ class RecipesList extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      recipes: null,
+      recipes: [],
       query: '',
-      sortType: 't',
+      sortType: 'r',
+      page: 1,
       error: false,
       loading: true,
-      errorMessage: ''
+      errorMessage: '',
+      loadMore: true,
     }
 
     this.changeQueryHandler = this.changeQueryHandler.bind(this);
     this.changeSortTypeHandler = this.changeSortTypeHandler.bind(this);
   }
 
-  componentDidMount() {
-    this.loadRecipies();
-  }
-
   loadRecipies(event) {
     if (event) {
+      this.setState({recipes: [], page: 1})
       event.preventDefault();
     }
     if (!this.state.loading) {
       this.setState({loading: true});
     }
-    axios.get('https://www.food2fork.com/api/search?key=' + APIkey + '&q=' + this.state.query + '&sort=' + this.state.sortType)
+    console.log(this.state.page)
+
+    axios.get('https://www.food2fork.com/api/search?key=' + APIkey + '&q=' + this.state.query + '&sort=' + this.state.sortType + '&page=' + this.state.page)
     .then(response => {
       // Reached API Call limit
       if (response.data.error === "limit") {
-        this.setState({error: true, errorMessage: 'API Call limit reached', loading: false})
+        this.setState({error: true, errorMessage: 'API Call limit reached', loading: false, loadMore: false})
+      }
+      else if (!response.data.recipes.length) {
+        this.setState({error: true, errorMessage: 'No recipes found', loading: false, loadMore: false})
+        console.log(response, 'ERROR')
       }
       else {
-        this.setState({recipes: response.data.recipes, loading: false, error: false});
+        this.setState({recipes: [...this.state.recipes, ...response.data.recipes], loading: false, error: false, page: this.state.page+1, loadMore: response.data.count === 30});
+
+        console.log("PAGE LOAD");
         console.log(response)
+        console.log(this.state.page)
       }
+
     })
     .catch(error => this.setState({error: true, errorMessage: 'Something went wrong'}))
   }
@@ -58,7 +69,7 @@ class RecipesList extends Component {
 
   render() {
     let loadedRecipes = [];
-    if (this.state.recipes) {
+    if (this.state.recipes.length) {
       loadedRecipes = this.state.recipes.map(recipe => {
         return (
           <div className="w-25 my-3" key={recipe.recipe_id}>
@@ -80,21 +91,26 @@ class RecipesList extends Component {
       })
     }
 
-    if (this.state.loading) {
-      loadedRecipes = <div className="d-flex w-100 justify-content-center"><ClipLoader size={300} loading={this.state.loading}/></div>;
-    }
+    const loader = <div className="d-flex w-100 justify-content-center"><ClipLoader size={300} loading={this.state.loading}/></div>
 
     return (
-      <div>
-        <SearchBar
-          changeQuery={(event) => this.changeQueryHandler(event)}
-          changeSortType={(event) => this.changeSortTypeHandler(event)}
-          loadRecipies={(event) => this.loadRecipies(event)}
-        />
-        <div className="d-flex flex-wrap">
-          {this.state.error ? <h1>{this.state.errorMessage}</h1> : loadedRecipes}
-        </div>
-      </div>
+      <Aux>
+          <SearchBar
+            changeQuery={(event) => this.changeQueryHandler(event)}
+            changeSortType={(event) => this.changeSortTypeHandler(event)}
+            loadRecipies={(event) => this.loadRecipies(event)}
+          />
+        <div style={{height: "100vh"}} > {/* overflow auto */}
+          <InfiniteScroll
+                pageStart={0}
+                loadMore={() => this.loadRecipies()}
+                hasMore={this.state.loadMore}
+                loader={loader}
+              >
+              { this.state.error ? <h1>{this.state.errorMessage}</h1> : <div className="d-flex flex-wrap">{loadedRecipes}</div> }
+          </InfiniteScroll>
+          </div>
+      </Aux>
     )
   }
 }

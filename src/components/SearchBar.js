@@ -27,7 +27,7 @@ const SearchBar = (props) => {
                     Sort By
                   </div>
                 </div>
-                <select className="custom-select" defaultValue="t" onChange={(event) => props.changeSortType(event)}>
+                <select className="custom-select" defaultValue="r" onChange={(event) => props.changeSortType(event)}>
                   <option value="t">Top-rated</option>
                   <option value="r">Trending</option>
                 </select>
