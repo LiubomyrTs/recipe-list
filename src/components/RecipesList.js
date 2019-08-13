@@ -35,7 +35,6 @@ class RecipesList extends Component {
     if (!this.state.loading) {
       this.setState({loading: true});
     }
-    console.log(this.state.page)
 
     axios.get('https://www.food2fork.com/api/search?key=' + APIkey + '&q=' + this.state.query + '&sort=' + this.state.sortType + '&page=' + this.state.page)
     .then(response => {
@@ -45,14 +44,9 @@ class RecipesList extends Component {
       }
       else if (!response.data.recipes.length) {
         this.setState({error: true, errorMessage: 'No recipes found', loading: false, loadMore: false})
-        console.log(response, 'ERROR')
       }
       else {
         this.setState({recipes: [...this.state.recipes, ...response.data.recipes], loading: false, error: false, page: this.state.page+1, loadMore: response.data.count === 30});
-
-        console.log("PAGE LOAD");
-        console.log(response)
-        console.log(this.state.page)
       }
 
     })
@@ -72,11 +66,11 @@ class RecipesList extends Component {
     if (this.state.recipes.length) {
       loadedRecipes = this.state.recipes.map(recipe => {
         return (
-          <div className="w-25 my-3" key={recipe.recipe_id}>
+          <div className="w-25 my-3" key={recipe.recipe_id + this.state.page}> {/*REVIEW:*/}
             <div className="card mx-3 h-100">
               <div style={{backgroundImage:"url(" + recipe.image_url + ")"}} className="card-img"></div>
               <div className="card-body">
-                <h5 className="card-title">{recipe.title}</h5>
+                <h5 className="card-title" dangerouslySetInnerHTML={{__html: recipe.title}}></h5>
                 <p className="card-text">{recipe.publisher}</p>
                 <p className="card-text">
                   <span className="badge badge-info">{parseInt(recipe.social_rank)}</span>
@@ -91,7 +85,7 @@ class RecipesList extends Component {
       })
     }
 
-    const loader = <div className="d-flex w-100 justify-content-center"><ClipLoader size={300} loading={this.state.loading}/></div>
+    const loader = <div className="d-flex w-100 justify-content-center" key={this.state.page}><ClipLoader size={300} loading={this.state.loading}/></div>
 
     return (
       <Aux>
@@ -100,8 +94,9 @@ class RecipesList extends Component {
             changeSortType={(event) => this.changeSortTypeHandler(event)}
             loadRecipies={(event) => this.loadRecipies(event)}
           />
-        <div style={{height: "100vh"}} > {/* overflow auto */}
+        <div style={{height: "100vh"}} >
           <InfiniteScroll
+                useWindow={true}
                 pageStart={0}
                 loadMore={() => this.loadRecipies()}
                 hasMore={this.state.loadMore}
