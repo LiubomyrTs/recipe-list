@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SearchBar = (props) => {
+const SearchBar = function(props) {
   return (
     <header className="my-3">
       <form>
@@ -8,14 +8,15 @@ const SearchBar = (props) => {
             <div className="col-auto">
               <div className="input-group">
                 <div className="input-group-prepend">
-                  <div className="input-group-text">
-                    <i className="fa fa-search"></i>
-                  </div>
+                  <label className="input-group-text" for="query">
+                    <i className="fa fa-search" />
+                  </label>
                 </div>
                 <input
+                  id="query"
                   className="form-control"
                   type="text"
-                  onChange={(event) => props.changeQuery(event)}
+                  onChange={props.changeQuery}
                   placeholder="Search By Ingredients or Name"
                 />
               </div>
@@ -23,11 +24,11 @@ const SearchBar = (props) => {
             <div className="col-auto">
               <div className="input-group">
                 <div className="input-group-prepend">
-                  <div className="input-group-text">
+                  <label className="input-group-text" for="type-select">
                     Sort By
-                  </div>
+                  </label>
                 </div>
-                <select className="custom-select" defaultValue="r" onChange={(event) => props.changeSortType(event)}>
+                <select id="type-select" className="custom-select" defaultValue="r" onChange={props.changeSortType}>
                   <option value="t">Top-rated</option>
                   <option value="r">Trending</option>
                 </select>
@@ -35,10 +36,9 @@ const SearchBar = (props) => {
             </div>
             <div className="col-auto">
               <button
-                disabled={props.disabled}
-                onClick={(event) => props.loadRecipies(event)}
+                onClick={props.loadRecipies}
                 type="submit"
-                className="btn btn-primary">Seach</button>
+                className="btn btn-primary">Search</button>
             </div>
           </div>
         </form>

@@ -5,9 +5,10 @@ import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import Aux from '../hoc/Aux';
-import SearchBar from "./SearchBar";
+import SearchBar from './SearchBar';
+import Card from './UI/Card';
 
-const APIkey = process.env.REACT_APP_API_KEY;
+import { APIkey } from '../constants/index';
 
 class RecipesList extends Component {
   constructor(props) {
@@ -23,8 +24,8 @@ class RecipesList extends Component {
       loadMore: true,
     }
 
-    this.changeQueryHandler = this.changeQueryHandler.bind(this);
-    this.changeSortTypeHandler = this.changeSortTypeHandler.bind(this);
+    this.loader = <div className="d-flex w-100 justify-content-center" key={this.state.page}><ClipLoader size={300} loading={this.state.loading}/></div>
+
   }
 
   loadRecipies(event) {
@@ -36,7 +37,7 @@ class RecipesList extends Component {
       this.setState({loading: true});
     }
 
-    axios.get('https://www.food2fork.com/api/search?key=' + APIkey + '&q=' + this.state.query + '&sort=' + this.state.sortType + '&page=' + this.state.page)
+    axios.get(`https://www.food2fork.com/api/search?key=${APIkey}&q=${this.state.query}&sort=${this.state.sortType}&page${this.state.page}`)
     .then(response => {
       // Reached API Call limit
       if (response.data.error === "limit") {
@@ -53,11 +54,11 @@ class RecipesList extends Component {
     .catch(error => this.setState({error: true, errorMessage: 'Something went wrong'}))
   }
 
-  changeQueryHandler = (event) => {
+  changeQueryHandler(event) {
     this.setState({query: event.target.value})
   }
 
-  changeSortTypeHandler = (event) => {
+  changeSortTypeHandler(event) {
     this.setState({sortType: event.target.value})
   }
 
@@ -66,26 +67,10 @@ class RecipesList extends Component {
     if (this.state.recipes.length) {
       loadedRecipes = this.state.recipes.map(recipe => {
         return (
-          <div className="w-25 my-3" key={recipe.recipe_id + this.state.page}> {/*REVIEW:*/}
-            <div className="card mx-3 h-100">
-              <div style={{backgroundImage:"url(" + recipe.image_url + ")"}} className="card-img"></div>
-              <div className="card-body">
-                <h5 className="card-title" dangerouslySetInnerHTML={{__html: recipe.title}}></h5>
-                <p className="card-text">{recipe.publisher}</p>
-                <p className="card-text">
-                  <span className="badge badge-info">{parseInt(recipe.social_rank)}</span>
-                </p>
-              </div>
-              <div className="card-footer">
-                <Link className="btn btn-primary" to={"/" + recipe.recipe_id}>More</Link>
-              </div>
-            </div>
-          </div>
+          <Card recipe={recipe}/>
         )
       })
     }
-
-    const loader = <div className="d-flex w-100 justify-content-center" key={this.state.page}><ClipLoader size={300} loading={this.state.loading}/></div>
 
     return (
       <Aux>
@@ -100,7 +85,7 @@ class RecipesList extends Component {
                 pageStart={0}
                 loadMore={() => this.loadRecipies()}
                 hasMore={this.state.loadMore}
-                loader={loader}
+                loader={this.loader}
               >
               { this.state.error ? <h1>{this.state.errorMessage}</h1> : <div className="d-flex flex-wrap">{loadedRecipes}</div> }
           </InfiniteScroll>
