@@ -8,7 +8,7 @@ const SearchBar = function(props) {
             <div className="col-auto">
               <div className="input-group">
                 <div className="input-group-prepend">
-                  <label className="input-group-text" for="query">
+                  <label className="input-group-text" htmlFor="query">
                     <i className="fa fa-search" />
                   </label>
                 </div>
@@ -24,7 +24,7 @@ const SearchBar = function(props) {
             <div className="col-auto">
               <div className="input-group">
                 <div className="input-group-prepend">
-                  <label className="input-group-text" for="type-select">
+                  <label className="input-group-text" htmlFor="type-select">
                     Sort By
                   </label>
                 </div>

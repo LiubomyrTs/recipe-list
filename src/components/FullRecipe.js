@@ -75,7 +75,7 @@ class FullRecipe extends Component {
                       </li>
                       <li className="list-group-item">
                         <h6>Source</h6>
-                        <a target="_blank" href={this.state.recipe.source_url}>{this.state.recipe.source_url}</a>
+                        <a target="_blank" rel="noreferrer noopener" href={this.state.recipe.source_url}>{this.state.recipe.source_url}</a>
                       </li>
                         <li className="list-group-item">
                         <h6>Ingredients</h6>

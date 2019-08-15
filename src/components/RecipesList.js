@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -65,9 +64,9 @@ class RecipesList extends Component {
   render() {
     let loadedRecipes = [];
     if (this.state.recipes.length) {
-      loadedRecipes = this.state.recipes.map(recipe => {
+      loadedRecipes = this.state.recipes.map((recipe, index) => {
         return (
-          <Card recipe={recipe}/>
+          <Card recipe={recipe} key={index}/>
         )
       })
     }
@@ -89,7 +88,7 @@ class RecipesList extends Component {
               >
               { this.state.error ? <h1>{this.state.errorMessage}</h1> : <div className="d-flex flex-wrap">{loadedRecipes}</div> }
           </InfiniteScroll>
-          </div>
+        </div>
       </Aux>
     )
   }

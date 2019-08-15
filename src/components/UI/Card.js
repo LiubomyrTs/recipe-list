@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Card = function(props) {
   return (
-    <div className="w-25 my-3" key={props.recipe.recipe_id}> {/*REVIEW:  + this.state.page*/}
+    <div className="w-25 my-3">
       <div className="card mx-3 h-100">
         <div style={{backgroundImage:`url(${props.recipe.image_url})`}} className="card-img"></div>
         <div className="card-body">
