@@ -1,23 +1,21 @@
-import React, {Component} from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import React from 'react';
+import {BrowserRouter, Route} from 'react-router-dom';
 
 import './App.css';
 
 import RecipesList from './components/RecipesList';
 import FullRecipe from './components/FullRecipe';
 
-class App extends Component {
+const App = function() {
 
-  render() {
-    return (
-      <BrowserRouter>
+  return (
+     <BrowserRouter>
         <div className="container">
-          <Route path="/" exact component={RecipesList} />
-          <Route path="/:id" exact component={FullRecipe} />
+          <Route path="/" exact component={RecipesList}/>
+          <Route path="/:id" exact component={FullRecipe}/>
         </div>
       </BrowserRouter>
-    )
-  }
+  )
 
 }
 
